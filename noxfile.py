@@ -11,8 +11,8 @@ from pathlib import Path
 # https://github.com/theacodes/nox/issues/199
 
 
-python = ["3.6", "3.7"]
-nox.options.sessions = ["unittests", "lint", "docs"]
+python = ["3.6", "3.7", "3.8"]
+nox.options.sessions = ["tests", "lint", "docs"]
 
 
 doc_dependencies = [".", "jinja2", "mkdocs", "mkdocs-material"]
@@ -20,9 +20,27 @@ lint_dependencies = ["black", "flake8", "mypy", "check-manifest"]
 
 
 @nox.session(python=python)
-def unittests(session):
-    session.install(".")
-    session.run("python", "-m", "unittest", "discover")
+def tests(session):
+    session.install("-e", ".", "pytest", "pytest-cov")
+    tests = session.posargs or ["tests"]
+    session.run(
+        "pytest", "--cov=pipx", "--cov-config", ".coveragerc", "--cov-report=", *tests
+    )
+    session.notify("cover")
+
+
+@nox.session
+def cover(session):
+    """Coverage analysis"""
+    session.install("coverage")
+    session.run(
+        "coverage",
+        "report",
+        "--show-missing",
+        # "--omit=pygdbmi/printcolor.py",
+        # "--fail-under=50",
+    )
+    session.run("coverage", "erase")
 
 
 @nox.session(python=python)

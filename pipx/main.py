@@ -13,17 +13,7 @@ import textwrap
 import urllib.parse
 from typing import Dict, List
 
-from . import commands
-from .constants import (
-    DEFAULT_PIPX_BIN_DIR,
-    DEFAULT_PIPX_HOME,
-    DEFAULT_PYTHON,
-    LOCAL_BIN_DIR,
-    PIPX_LOCAL_VENVS,
-    PIPX_VENV_CACHEDIR,
-    TEMP_VENV_EXPIRATION_THRESHOLD_DAYS,
-    completion_instructions,
-)
+from . import commands, constants
 from .util import PipxError, mkdir
 from .colors import bold, green
 from .Venv import VenvContainer
@@ -49,8 +39,8 @@ Install and execute apps from Python packages.
 Binaries can either be installed globally into isolated Virtual Environments
 or run directly in an temporary Virtual Environment.
 
-Virtual Environment location is {str(PIPX_LOCAL_VENVS)}.
-Symlinks to apps are placed in {str(LOCAL_BIN_DIR)}.
+Virtual Environment location is {str(constants.PIPX_LOCAL_VENVS)}.
+Symlinks to apps are placed in {str(constants.LOCAL_BIN_DIR)}.
 These locations can be overridden with the environment variables
 PIPX_HOME and PIPX_BIN_DIR, respectively. (Virtual Environments will
 be installed to $PIPX_HOME/venvs)
@@ -77,11 +67,11 @@ pipx install --spec TAR_GZ_FILE PACKAGE
 
 The argument to `--spec` is passed directly to `pip install`.
 
-The default virtual environment location is {DEFAULT_PIPX_HOME}
+The default virtual environment location is {constants.DEFAULT_PIPX_HOME}
 and can be overridden by setting the environment variable `PIPX_HOME`
  (Virtual Environments will be installed to `$PIPX_HOME/venvs`).
 
-The default app location is {DEFAULT_PIPX_BIN_DIR} and can be
+The default app location is {constants.DEFAULT_PIPX_BIN_DIR} and can be
 overridden by setting the environment variable `PIPX_BIN_DIR`.
 """
 
@@ -118,7 +108,7 @@ def run_pipx_command(args):  # noqa: C901
     pip_args = get_pip_args(vars(args))
     venv_args = get_venv_args(vars(args))
 
-    venv_container = VenvContainer(PIPX_LOCAL_VENVS)
+    venv_container = VenvContainer(constants.PIPX_LOCAL_VENVS)
 
     if "package" in args:
         package = args.package
@@ -157,7 +147,7 @@ def run_pipx_command(args):  # noqa: C901
             venv_dir,
             package,
             package_or_url,
-            LOCAL_BIN_DIR,
+            constants.LOCAL_BIN_DIR,
             args.python,
             pip_args,
             venv_args,
@@ -197,9 +187,9 @@ def run_pipx_command(args):  # noqa: C901
     elif args.command == "list":
         commands.list_packages(venv_container)
     elif args.command == "uninstall":
-        commands.uninstall(venv_dir, package, LOCAL_BIN_DIR, verbose)
+        commands.uninstall(venv_dir, package, constants.LOCAL_BIN_DIR, verbose)
     elif args.command == "uninstall-all":
-        commands.uninstall_all(venv_container, LOCAL_BIN_DIR, verbose)
+        commands.uninstall_all(venv_container, constants.LOCAL_BIN_DIR, verbose)
     elif args.command == "upgrade-all":
         commands.upgrade_all(
             venv_container,
@@ -212,7 +202,7 @@ def run_pipx_command(args):  # noqa: C901
     elif args.command == "reinstall-all":
         commands.reinstall_all(
             venv_container,
-            LOCAL_BIN_DIR,
+            constants.LOCAL_BIN_DIR,
             args.python,
             pip_args,
             venv_args,
@@ -226,7 +216,7 @@ def run_pipx_command(args):  # noqa: C901
         commands.run_pip(package, venv_dir, args.pipargs, args.verbose)
     elif args.command == "ensurepath":
         try:
-            commands.ensurepath(LOCAL_BIN_DIR, force=args.force)
+            commands.ensurepath(constants.LOCAL_BIN_DIR, force=args.force)
         except Exception as e:
             raise PipxError(e)
     elif args.command == "completions":
@@ -267,7 +257,7 @@ def _autocomplete_list_of_installed_packages(
 
 
 def get_command_parser():
-    venv_container = VenvContainer(PIPX_LOCAL_VENVS)
+    venv_container = VenvContainer(constants.PIPX_LOCAL_VENVS)
 
     autocomplete_list_of_installed_packages = functools.partial(
         _autocomplete_list_of_installed_packages, venv_container
@@ -299,7 +289,7 @@ def get_command_parser():
     )
     p.add_argument(
         "--python",
-        default=DEFAULT_PYTHON,
+        default=constants.DEFAULT_PYTHON,
         help=(
             "The Python executable used to create the Virtual Environment and run the "
             "associated app/apps. Must be v3.3+."
@@ -429,7 +419,7 @@ def get_command_parser():
             f"""
         Download the latest version of a package to a temporary virtual environment,
         then run an app from it. The environment will be cached
-        and re-used for up to {TEMP_VENV_EXPIRATION_THRESHOLD_DAYS} days. This
+        and re-used for up to {constants.TEMP_VENV_EXPIRATION_THRESHOLD_DAYS} days. This
         means subsequent calls to 'run' for the same package will be faster
         since they can re-use the cached Virtual Environment.
 
@@ -461,7 +451,7 @@ def get_command_parser():
     p.add_argument("--verbose", action="store_true")
     p.add_argument(
         "--python",
-        default=DEFAULT_PYTHON,
+        default=constants.DEFAULT_PYTHON,
         help="The Python version to run package's CLI app with. Must be v3.3+.",
     )
     add_pip_venv_args(p)
@@ -497,7 +487,7 @@ def get_command_parser():
         action="store_true",
         help=(
             "Add text to your shell's config file even if it looks like your "
-            f"PATH already has {str(LOCAL_BIN_DIR)}"
+            f"PATH already has {str(constants.LOCAL_BIN_DIR)}"
         ),
     )
     parser.add_argument("--version", action="store_true", help="Print version and exit")
@@ -521,11 +511,11 @@ def setup(args):
     else:
         logging.basicConfig(level=logging.WARNING, format="%(message)s")
 
-    mkdir(PIPX_LOCAL_VENVS)
-    mkdir(LOCAL_BIN_DIR)
-    mkdir(PIPX_VENV_CACHEDIR)
+    mkdir(constants.PIPX_LOCAL_VENVS)
+    mkdir(constants.LOCAL_BIN_DIR)
+    mkdir(constants.PIPX_VENV_CACHEDIR)
 
-    old_pipx_venv_location = PIPX_LOCAL_VENVS / "pipx-app"
+    old_pipx_venv_location = constants.PIPX_LOCAL_VENVS / "pipx-app"
     if old_pipx_venv_location.exists():
         logging.warning(
             "A virtual environment for pipx was detected at "
@@ -534,7 +524,7 @@ def setup(args):
         )
 
 
-def cli():
+def cli() -> int:
     """Entry point from command line"""
     try:
         parser = get_command_parser()
@@ -543,13 +533,14 @@ def cli():
         setup(parsed_pipx_args)
         if not parsed_pipx_args.command:
             parser.print_help()
-            exit(1)
-        exit(run_pipx_command(parsed_pipx_args))
+            return 1
+        return run_pipx_command(parsed_pipx_args)
     except PipxError as e:
-        exit(e)
+        print(str(e), file=sys.stderr)
+        return 1
     except KeyboardInterrupt:
-        exit(1)
+        return 1
 
 
 if __name__ == "__main__":
-    cli()
+    sys.exit(cli())

@@ -1,13 +1,33 @@
+os:
+  - linux
+cache:
+  pip: true
 language: python
 sudo: required
 matrix:
   include:
+    # unit tests
+  - python: '3.5'
+    env: NOXSESSION="tests-3.5"
   - python: '3.6'
+    env: NOXSESSION="tests-3.6"
   - python: '3.7'
+    env: NOXSESSION="tests-3.7"
     dist: xenial
+  - python: '3.8-dev'
+    env: NOXSESSION="tests-3.8"
+    dist: xenial
+
+    # other stuff
+  - python: '3.7'
+    env: NOXSESSION="lint"
+    dist: xenial
+  - python: '3.7'
+    env: NOXSESSION="docs"
+    dist: xenial
+
 install:
   - pip install git+https://github.com/cs01/nox.git@5ea70723e9e6#egg=nox
+
 script:
-  - nox --non-interactive
-cache:
-  pip: true
+  - nox --non-interactive --session "$NOXSESSION"
