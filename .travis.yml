@@ -13,7 +13,7 @@ matrix:
       - choco install python --version $TRAVIS_PYTHON_VERSION
       - export PATH="/C/Python37:/C/Python37/Scripts:$PATH"
 install:
-  - pip install git+https://github.com/cs01/nox.git@5ea70723e9e6#egg=nox
+  - pip install nox
 script:
   - nox --non-interactive
 cache:
