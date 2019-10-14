@@ -19,7 +19,7 @@ doc_dependencies = [".", "jinja2", "mkdocs", "mkdocs-material"]
 lint_dependencies = ["black", "flake8", "mypy", "check-manifest"]
 
 
-@nox.session(python=python)
+@nox.session(python=python, venv_backend="venv")
 def unittests(session):
     session.install(".")
     session.run("python", "-m", "unittest", "discover")
