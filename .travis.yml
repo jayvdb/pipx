@@ -14,7 +14,7 @@ matrix:
     before_install:
       - echo $PATH
       - export PATH=$PATH:/c/Windows/system32
-      - chcp 65001
+      - chcp.com 65001
       - export TRAVIS_PYTHON_VERSION=3.7
       - choco install python --version $TRAVIS_PYTHON_VERSION
       - export PATH="/C/Python37:/C/Python37/Scripts:$PATH"
