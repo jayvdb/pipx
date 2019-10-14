@@ -21,6 +21,7 @@ lint_dependencies = ["black", "flake8", "mypy", "check-manifest"]
 
 @nox.session(python=python, venv_backend="venv")
 def unittests(session):
+    session.run("python", "-m", "ensurepip")
     session.install(".")
     session.run("python", "-m", "unittest", "discover")
 
