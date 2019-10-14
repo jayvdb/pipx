@@ -1,3 +1,5 @@
+import os
+
 import nox  # type: ignore
 from pathlib import Path
 
@@ -22,6 +24,8 @@ lint_dependencies = ["black", "flake8", "mypy", "check-manifest"]
 @nox.session(python=python)
 def unittests(session):
     session.install(".")
+    if os.environ.get("TRAVIS_PYTHON_VERSION"):
+        session.run("pyenv", "global", os.environ["TRAVIS_PYTHON_VERSION"])
     session.run("python", "-m", "unittest", "discover")
 
 
