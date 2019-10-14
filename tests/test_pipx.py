@@ -262,7 +262,7 @@ class TestPipxCommands(unittest.TestCase):
 
     def test_existing_symlink_points_to_existing_wrong_location_warning(self):
         self.bin_dir.mkdir(exist_ok=True, parents=True)
-        (self.bin_dir / "pycowsay").symlink_to("/dev/null")
+        (self.bin_dir / "pycowsay").symlink_to(os.devnull)
 
         env = os.environ.copy()
         env["PATH"] = f"{str(self.bin_dir)}:{env.get('PATH')}"

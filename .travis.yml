@@ -10,10 +10,9 @@ matrix:
   - os: windows
     language: bash
     python: '3.7'
-    env: NOXSESSION=unittests-3.7,lint-3.7,docs-3.7
+    # Docs fail on Windows, even if `chcp.com 65001` is used
+    env: NOXSESSION=unittests-3.7,lint-3.7
     before_install:
-      - echo $PATH
-      - export PATH=$PATH:/c/Windows/system32
       - chcp.com 65001
       - export TRAVIS_PYTHON_VERSION=3.7
       - choco install python --version $TRAVIS_PYTHON_VERSION
