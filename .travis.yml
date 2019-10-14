@@ -15,6 +15,7 @@ matrix:
 install:
   - pip install nox
 script:
+  - pyenv global $TRAVIS_PYTHON_VERSION
   - nox --non-interactive
 cache:
   pip: true
