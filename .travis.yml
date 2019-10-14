@@ -3,17 +3,12 @@ sudo: required
 matrix:
   include:
   - python: '3.6'
-    env: NOXSESSION=unittests-3.6,lint-3.6,docs-3.6
   - python: '3.7'
-    env: NOXSESSION=unittests-3.7,lint-3.7,docs-3.7
     dist: xenial
   - os: windows
     language: bash
     python: '3.7'
-    # Docs fail on Windows, even if `chcp.com 65001` is used
-    env: NOXSESSION=unittests-3.7,lint-3.7
     before_install:
-      - chcp.com 65001
       - export TRAVIS_PYTHON_VERSION=3.7
       - choco install python --version $TRAVIS_PYTHON_VERSION
       - export PATH="/C/Python37:/C/Python37/Scripts:$PATH"
