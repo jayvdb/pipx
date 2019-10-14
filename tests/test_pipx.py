@@ -274,8 +274,8 @@ class TestPipxCommands(unittest.TestCase):
         )
         stdout = ret.stdout.decode()
         stderr = ret.stderr.decode()
-        self.assertTrue("File exists at" in stderr)
-        self.assertTrue("symlink missing or pointing to unexpected location" in stdout)
+        self.assertTrue("File exists at" in stderr, stderr)
+        self.assertTrue("symlink missing or pointing to unexpected location" in stdout, stdout)
         # bin dir was on path, so the warning should NOT appear (even though the symlink
         # pointed to the wrong location)
         self.assertTrue("is not on your PATH environment variable" not in stderr)
